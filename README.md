@@ -29,12 +29,12 @@ go run main.go -ID 2
 A **process** struct for each process sepcified in *config.txt*
 ```go
 type process struct {
-  Ip string      // IP address obtained from config.tst
+  Ip string      // IP address obtained from config.txt
   Port string    // Port number obtained from config.txt
   Conn net.Conn  // The client connection from the current process to this process. If no connection has been built, Conn is nil
 }
 ```
-Each process holds a map of **process** that contains information to all the processes in *config.txt*
+Each process holds a map of **process** with key ID that contains information to all the processes in *config.txt*
 ```go
 var processes map[string]process
 ```
