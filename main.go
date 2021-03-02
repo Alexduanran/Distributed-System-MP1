@@ -39,7 +39,7 @@ func main() {
 	go handleMessages()
 
 	// start server listening
-	tcp.MultiThreadedServer(processes[_id].Port, handleConnection)
+	tcp.MultiThreadedServer(processes[_id].Ip, processes[_id].Port, handleConnection)
 }
 
 func handleConnection(conn net.Conn, listen *bool) {
@@ -77,7 +77,7 @@ func handleMessages() {
 		// if this is the first time messaging with idStr,
 		// build connection with it first and stores the connection in processes
 		if proc, ok := processes[idStr]; ok && proc.Conn == nil {
-			proc.Conn, err = tcp.Connect(processes[idStr].Port)
+			proc.Conn, err = tcp.Connect(processes[idStr].Ip, processes[idStr].Port)
 			if err != nil {
 				fmt.Println("Process not yet started\n")
 				continue

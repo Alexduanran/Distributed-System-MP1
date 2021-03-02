@@ -6,8 +6,8 @@ import (
 )
 
 // Connect returns the connection of a client if connection is successfully established with server running on port
-func Connect(port string) (net.Conn, error) {
-	conn, err := net.Dial("tcp", "127.0.0.1:"+port)
+func Connect(ip string, port string) (net.Conn, error) {
+	conn, err := net.Dial("tcp", ip + ":"+port)
 	//checkError(err, "Connection error")
 	fmt.Println("Connection established...")
 

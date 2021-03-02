@@ -7,8 +7,8 @@ import (
 
 // MultiThreadedServer creates a server running on the given port that can handles multiple connections at the same time
 // runs the given function handleConnection when connection with a client is established
-func MultiThreadedServer(port string, handleConnection func(net.Conn, *bool)) {
-	ln, err := net.Listen("tcp", "127.0.0.1:"+port)
+func MultiThreadedServer(ip string, port string, handleConnection func(net.Conn, *bool)) {
+	ln, err := net.Listen("tcp", ip + ":" +port)
 	checkError(err, "Listening error")
 
 	// closing the server
