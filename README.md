@@ -23,6 +23,12 @@ go run main.go -ID 2
 ```bash
 ...
 ```
+#
+In order to send message between each process, in the command line
+```bash
+send [id] [message]
+```
+where id is the unique ID of the receiver process.
 
 ## Package Design
 ### Main
