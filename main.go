@@ -57,45 +57,52 @@ func handleMessages() {
 
 	// keeps on waiting for user inputs
 	for scanner.Scan() {
-		input := strings.Split(scanner.Text(), " ")
+		go func() {
+			input := strings.Split(scanner.Text(), " ")
 
-		// if user did not input 3 defined inputs
-		if len(input) < 3 {
-			fmt.Println("Not enough input\n")
-			continue
-		}
+			// if user did not input 3 defined inputs
+			if len(input) < 3 {
+				fmt.Println("Not enough input\n")
+				return
+			}
 
-		send, idStr, message := input[0], input[1], strings.Join(input[2:], " ")
-		idInt, err := strconv.Atoi(idStr)
+			send, idStr, message := input[0], input[1], strings.Join(input[2:], " ")
+			idInt, err := strconv.Atoi(idStr)
 
-		// if the input user enters is invalid
-		if err != nil || send != "send" || idInt < 1 || idInt >= len(processes) {
-			fmt.Println("Invalid input\n")
-			continue
-		}
+			// if the input user enters is invalid
+			if err != nil || send != "send" || idInt < 1 || idInt >= len(processes) {
+				fmt.Println("Invalid input\n")
+				return
+			}
 
-		// if this is the first time messaging with idStr,
-		// build connection with it first and stores the connection in processes
-		if proc, ok := processes[idStr]; ok && proc.Conn == nil {
-			proc.Conn, err = tcp.Connect(processes[idStr].Ip, processes[idStr].Port)
+			// if this is the first time messaging with idStr,
+			// build connection with it first and stores the connection in processes
+			if proc, ok := processes[idStr]; ok && proc.Conn == nil {
+				proc.Conn, err = tcp.Connect(processes[idStr].Ip, processes[idStr].Port)
+				if err != nil {
+					fmt.Println("Process not yet started\n")
+					return
+				}
+				processes[idStr] = proc
+			}
+
 			if err != nil {
 				fmt.Println("Process not yet started\n")
-				continue
+				return
 			}
-			processes[idStr] = proc
-		}
 
-		fmt.Printf(">>> Sent “%v” to process %v, system time is %v\n\n", message, idStr, time.Now().Format("15:04:05.000"))
+			fmt.Printf(">>> Sent “%v” to process %v, system time is %v\n\n", message, idStr, time.Now().Format("15:04:05.000"))
 
-		// simulate network delay
-		source := rand.NewSource(time.Now().UnixNano())
-		random := rand.New(source)
-		duration := time.Duration(random.Intn(maxDelay-minDelay)+minDelay) * time.Millisecond
-		time.Sleep(duration)
+			// simulate network delay
+			source := rand.NewSource(time.Now().UnixNano())
+			random := rand.New(source)
+			duration := time.Duration(random.Intn(maxDelay-minDelay)+minDelay) * time.Millisecond
+			time.Sleep(duration)
 
-		// send message to the destination conn
-		newMsg := msg.Message{_id, message}
-		tcp.UnicastSend(processes[idStr].Conn, newMsg)
+			// send message to the destination conn
+			newMsg := msg.Message{_id, message}
+			tcp.UnicastSend(processes[idStr].Conn, newMsg)
+		}()
 	}
 }
 
